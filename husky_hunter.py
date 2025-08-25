@@ -41,5 +41,56 @@ class HuskyHunter:
         })
         return session
 
-    def create_output_directory(self):
+    def create_output_directory(self) -> None:
         os.makedirs(self.output_dir, exist_ok=True)
+
+    def scrape_single_faculty(self):
+        """
+        Scrape data for a single faculty member.
+        """
+        logging.info(f"Scraping single faculty member from: {self.people_url}")
+        response = self.session.get(self.people_url)
+        if response.status_code == 200:
+            # Process the response content
+            logging.info("Successfully fetched faculty data.")
+        else:
+            logging.error(f"Failed to fetch faculty data: {response.status_code}")
+
+    def scrape_all_faculty(self):
+        """
+        Scrape data for all faculty members.
+        """
+        logging.info("Scraping all faculty members.")
+        response = self.session.get(self.people_url)
+        if response.status_code == 200:
+            # Process the response content
+            logging.info("Successfully fetched all faculty data.")
+        else:
+            logging.error(f"Failed to fetch all faculty data: {response.status_code}")
+
+def main():
+    """
+    Main function to start the HuskyHunter scraper.
+    """
+    import sys
+
+    if len(sys.argv) < 3:
+        logging.error("Usage: python husky_hunter.py <mode> <people_url>")
+        sys.exit(1)
+
+    mode = sys.argv[1]
+    people_url = sys.argv[2]
+
+    if mode not in ["single", "hunt"]:
+        logging.error("Invalid mode: Use 'single' or 'hunt'.")
+        sys.exit(1)
+
+    husky_hunter = HuskyHunter(people_url)
+    if mode == "single":
+        husky_hunter.scrape_single_faculty()
+    elif mode == "hunt":
+        husky_hunter.scrape_all_faculty()
+
+
+if __name__ == "__main__":
+    main()
